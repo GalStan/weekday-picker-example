@@ -1,5 +1,5 @@
 import { Day, DayType, WeekState } from './types'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Button } from './Button'
 import { buttonsContainer, weekend } from './WeekdayPicker.module.css'
 import { clsx } from 'clsx'
@@ -14,11 +14,6 @@ const initialState: WeekState = [
   { id: 'saturday', label: 'Sat', selected: false, type: DayType.Weekend },
   { id: 'sunday', label: 'Sun', selected: false, type: DayType.Weekend },
 ]
-
-const deyTypeWeightMap: Record<DayType, number> = {
-  [DayType.Weekday]: 1,
-  [DayType.Weekend]: 10,
-}
 
 export const WeekdayPicker = () => {
   const [weekState, setWeekState] = useState(initialState)
@@ -37,61 +32,24 @@ export const WeekdayPicker = () => {
     )
   }, [])
 
-  const stateHash = useMemo(
-    () =>
-      weekState.reduce((acc, next) => {
-        if (next.selected) {
-          return acc + deyTypeWeightMap[next.type]
-        }
-        return acc
-      }, 0),
-    [weekState]
-  )
-
-  const hadleeGroupToggle = useCallback(
-    (isSelected: boolean, type?: DayType) =>
-      setWeekState((prevState) =>
-        isSelected
-          ? prevState.map((day) => ({
-              ...day,
-              selected: false,
-            }))
-          : prevState.map((day) => ({
-              ...day,
-              selected: type ? day.type === type : true,
-            }))
-      ),
-    []
-  )
-
   return (
     <div>
       <div className={buttonsContainer}>
         <GroupToggle
-          isSelected={stateHash === 5}
-          handleToggle={useCallback(
-            () => hadleeGroupToggle(stateHash === 5, DayType.Weekday),
-            [hadleeGroupToggle, stateHash]
-          )}
+          weekState={weekState}
+          handleToggle={setWeekState}
+          type={DayType.Weekday}
         >
           Weekdays
         </GroupToggle>
         <GroupToggle
-          isSelected={stateHash === 20}
-          handleToggle={useCallback(
-            () => hadleeGroupToggle(stateHash === 20, DayType.Weekend),
-            [hadleeGroupToggle, stateHash]
-          )}
+          weekState={weekState}
+          handleToggle={setWeekState}
+          type={DayType.Weekend}
         >
           Weekends
         </GroupToggle>
-        <GroupToggle
-          isSelected={stateHash === 25}
-          handleToggle={useCallback(
-            () => hadleeGroupToggle(stateHash === 25),
-            [hadleeGroupToggle, stateHash]
-          )}
-        >
+        <GroupToggle weekState={weekState} handleToggle={setWeekState}>
           All days
         </GroupToggle>
       </div>
