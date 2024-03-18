@@ -13,7 +13,7 @@ export const Button = memo(
       className={clsx(button, {
         [large]: size === 'large',
         [activeClassName]: active,
-        [className]: !!className,
+        className
       })}
       {...props}
     />
